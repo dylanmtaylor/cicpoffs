@@ -32,18 +32,21 @@ jobs:
           file_glob: true
   Build_for_RPM:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fedora_version: [43, 44]
     steps:
       - uses: actions/checkout@v6
-      - run: "docker run --rm -v ./:/repo fedora:44 /bin/bash /repo/packaging/fedora/build.sh"
+      - run: "docker run --rm -v ./:/repo fedora:${{ matrix.fedora_version }} /bin/bash /repo/packaging/fedora/build.sh ${{ matrix.fedora_version }}"
       - uses: actions/upload-artifact@v7
         with:
-          name: cicpoffs.rpm
-          path: packaging/cicpoffs.rpm
+          name: cicpoffs-fc${{ matrix.fedora_version }}.rpm
+          path: packaging/cicpoffs-fc${{ matrix.fedora_version }}.rpm
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: packaging/cicpoffs.rpm
+          file: packaging/cicpoffs-fc${{ matrix.fedora_version }}.rpm
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
