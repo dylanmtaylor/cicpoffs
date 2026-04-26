@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+cd /repo
+dnf install -y gcc-c++ fuse3-devel libattr-devel make rpm-build
+mkdir -p /root/rpmbuild/{SOURCES,SPECS}
+tar czf /root/rpmbuild/SOURCES/cicpoffs-src.tar.gz --transform='s,^\.,cicpoffs-src,' -C /repo .
+cp packaging/fedora/cicpoffs.spec /root/rpmbuild/SPECS/
+rpmbuild -bb /root/rpmbuild/SPECS/cicpoffs.spec
+cp /root/rpmbuild/RPMS/x86_64/cicpoffs-*.rpm /repo/packaging/cicpoffs.rpm
